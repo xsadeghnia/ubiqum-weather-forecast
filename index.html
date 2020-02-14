@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <title>Weather Forecast</title>
+</head>
+
+<body>
+    <div id="vue">
+        <div class="loader" v-if="loading">
+          
+        </div>
+        <div v-if='!loading'>
+            <div class="container">
+                <div class="row">
+                    <div class="header-left">
+                        <img class="logo" src="images/Anyweather_logo_big (1).jpg" alt="">
+                        <h1>Weather</h1>
+                    </div>
+                    <div class="header-right">
+                        <input v-model="cityName" type="text" class="search-txt" placeholder="Search city...">
+                        <button v-on:click="readData" class="search-btn">Go</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="divider"></div>
+                </div>
+                <div class="row">
+                    <div class="single-cell">
+                        <p class="city-name">{{weather.city.name}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell">
+                        <p class="main-temp">{{temp}} &#8451</p>
+                        <img class="main-icon" v-bind:src="showIcon" alt="">
+                        <p class="main-temp">{{weather.list[0].weather[0].main}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell">
+                        <table class="weather-tbl">
+                            <tr>
+                                <td v-for="time in dayTime">{{time}}</td>
+                            </tr>
+                            <tr>
+                                <td v-for="icon in dayIcon"> <img v-bind:src="icon" alt=""></td>
+                            </tr>
+                            <tr>
+                                <td v-for="day in dayTemp">{{day}} &#8451</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell">
+                        <table class="info-tbl">
+                            <tr>
+                                <td>Feels Like</td>
+                                <td>Sunrise</td>
+                                <td>Sunset</td>
+                                <td>Humidity</td>
+                                <td>Wind</td>
+                            </tr>
+                            <tr>
+                                <td>{{temperatureConverter(weather.list[0].main.feels_like)}} &#8451</td>
+                                <td>{{timeConverterWithMin(weather.city.sunrise)}}</td>
+                                <td>{{timeConverterWithMin(weather.city.sunset)}}</td>
+                                <td>{{weather.list[0].main.humidity}} %</td>
+                                <td>{{(Math.round(weather.list[0].wind.speed*18)/5)}} km/hr</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell canvas-holder">
+                        <canvas id="myChart" ref="myChart" class="weather-chart"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell chart-btn">
+                        <button v-on:click="fillChartWithTemp">Temperature  (&#8451)</button>
+                        <button v-on:click="fillChartWithWind">Wind  (km/h)</button>
+                        <button v-on:click="fillChartWithHumidity">Humidity  (%)</button>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="single-cell">
+                        <table class="week-tbl">
+                            <tr>
+                                <td v-for="w in week">{{w}}</td>
+                            </tr>
+                            <tr>
+                                <td v-for="wi in weekIcon"><img v-bind:src="wi" alt=""></td>
+                            </tr>
+                            <tr>
+                                <td v-for="wt in  weektemp">{{wt}} &#8451</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="main.js"></script>
+</body>
+
+</html>
