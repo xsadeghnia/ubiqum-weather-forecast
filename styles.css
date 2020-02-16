@@ -148,12 +148,13 @@ body{
     margin-top: 10%;
     margin-bottom: 3%;
 }   
-.chart-btn{
+.chart-btn-holder{
     margin-bottom: 10%;
 }
-.chart-btn button{
+.chart-btn-holder button{
     width: 20%;
     color: #104ea3;
+    font-size: 1vw;
 }
 
 

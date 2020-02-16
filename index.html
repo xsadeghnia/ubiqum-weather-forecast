@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="single-cell chart-btn">
+                    <div class="single-cell chart-btn-holder">
                         <button v-on:click="fillChartWithTemp">Temperature  (&#8451)</button>
                         <button v-on:click="fillChartWithWind">Wind  (km/h)</button>
                         <button v-on:click="fillChartWithHumidity">Humidity  (%)</button>
@@ -95,7 +95,7 @@
                     <div class="single-cell">
                         <table class="week-tbl">
                             <tr>
-                                <td v-for="w in week">{{w}}</td>
+                                <td v-for="w in fourDayes">{{w}}</td>
                             </tr>
                             <tr>
                                 <td v-for="wi in weekIcon"><img v-bind:src="wi" alt=""></td>

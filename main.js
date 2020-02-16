@@ -9,7 +9,6 @@ const app = new Vue({
         cityName :'',
         loading: true,
         x : [],
-        
     },
     methods:{
         readData:async function(){
@@ -21,13 +20,11 @@ const app = new Vue({
             .then(res => res.json())
             .then(data => data)
             .catch(err => err)
-            this.temps = this.weather.list.map(function(item) { return item.main.temp - 273.15; });
-            this.winds = this.weather.list.map(function(item) { return (item.wind.speed*18)/5; });
-            this.humids = this.weather.list.map(function(item) { return (item.main.humidity*18)/5; });
+            this.temps = this.avgTemp;
+            this.winds = this.avgSpeed;
+            this.humids = this.avgHumid;
             this.loading = false;
             setTimeout( () => {this.fillChartWithTemp();},10)
-            
-            
         },
         init: function() {
             this.readData();
@@ -76,11 +73,12 @@ const app = new Vue({
             return Math.round(temp-273.15);
         },
         fillChart() {
+            Chart.defaults.global.defaultFontColor = 'darkblue';
             var ctx = this.$refs['myChart'].getContext('2d');
             var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: this.week,
+                labels: this.chartWeek,
                 datasets: [{
                     label: this.chartTitle,
                     data: this.x,
@@ -88,7 +86,8 @@ const app = new Vue({
                         'rgba(0, 42, 100)',
                         'rgba(0, 64, 125)', 
                         'rgba(0, 87, 152)', 
-                        'rgba(0, 111, 179)',   
+                        'rgba(0, 111, 179)', 
+                        'rgba(0, 145, 206)',  
                     ],
                    
                 }]
@@ -105,9 +104,6 @@ const app = new Vue({
             }
         });
         },
-        // empty:function(x){
-        //     return x;
-        // },
         fillChartWithTemp:function(){
              this.x = this.temps;
              this.chartTitle = "Temperature C";
@@ -160,11 +156,8 @@ const app = new Vue({
             return arr;
         },
         weektemp:function(){
-            let arr = [];
-            for (let i = 8; i < this.weather.list.length; i+=8) {
-                arr.push( Math.round(this.temperatureConverter(this.weather.list[i].main.temp)));
-            }
-            return arr;
+            let arr = this.avgTemp;
+            return arr.slice(1);;
         },
         weekIcon:function(){
             let arr = [];
@@ -173,48 +166,83 @@ const app = new Vue({
             }
             return arr;
         },
-        
-        week:function(){
+        getweekArr:function(){
             let arr = [];
+            arr.push("Sunday");
             arr.push("Monday");
             arr.push("Tuesday");
             arr.push("Wednesday");
             arr.push("Thursday");
             arr.push("Friday");
             arr.push("Saturday");
-            arr.push("Sunday");
+            return arr;
+        },
+        
+        chartWeek:function(){
+            let arr = this.getweekArr;
             var d = new Date();
             var n = d.getDay();
             let arr2 =[];
-            for (let i = 0; i <= 3 ; i++) {
+            for (let i = 0; i <= 4 ; i++) {
                 arr2.push(arr[(n+i) % 7]);
             }
             return arr2;
         },
        
         
-        // fiveDayes:function(){
-        //     let arr = [];
-        //     arr.push("Monday");
-        //     arr.push("Tuesday");
-        //     arr.push("Wednesday");
-        //     arr.push("Thursday");
-        //     arr.push("Friday");
-        //     arr.push("Saturday");
-        //     arr.push("Sunday");
-        //     var d = new Date();
-        //     var n = d.getDay();
-        //     let arr2 =[];
-        //     for (let j = 0; j < arr.length; j++) {
-        //         if(n == arr[j]){
-        //             for (let i = j; i < arr.length; i++) {
-        //                 arr2.push(arr[(i) % 7]);
-        //             }
-        //         }
-        //     }
+        fourDayes:function(){
+            let arr = this.getweekArr;
+            var d = new Date();
+            var n = d.getDay();
+            let arr2 =[];
+            for (let i = 1; i <= 4 ; i++) {
+                arr2.push(arr[(n+i) % 7]);
+            }
             
-        //     return arr2;
-        // },
+            return arr2;
+        },
+        avgTemp:function(){
+            let sum = 0 ;
+            let avg = 0;
+            let arr = [];
+            for (let i = 0; i < this.weather.list.length; i++) {
+                sum += this.weather.list[i].main.temp;
+                if((i+1) % 8 == 0 ){
+                    avg = Math.round(this.temperatureConverter(sum / 8)) ;
+                    arr.push(avg);
+                    sum = 0;
+                }
+            }
+            return arr;
+        },
+        avgHumid:function(){
+            let sum = 0 ;
+            let avg = 0;
+            let arr = [];
+            for (let i = 0; i < this.weather.list.length; i++) {
+                sum += this.weather.list[i].main.humidity;
+                if((i+1) % 8 == 0 ){
+                    avg = sum / 8 ;
+                    arr.push(avg);
+                    sum = 0;
+                }
+            }
+            return arr;
+        },
+        avgSpeed:function(){
+            let sum = 0 ;
+            let avg = 0;
+            let arr = [];
+            for (let i = 0; i < this.weather.list.length; i++) {
+                sum += this.weather.list[i].wind.speed;
+                if((i+1) % 8 == 0 ){
+                    avg = ((sum / 8)*18)/5 ;
+                    arr.push(avg);
+                    sum = 0;
+                }
+            }
+            return arr;
+        },
 
     },
     created: function() {
@@ -223,10 +251,5 @@ const app = new Vue({
     mounted() {
         this.cityName = 'Amsterdam';  
         this.init();
-
-        
-
-        
-        
     }
 });
